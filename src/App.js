@@ -8,10 +8,14 @@ function App() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (window.Kakao && !window.Kakao.isInitialized()) {
-            const kakaoKey = process.env.REACT_APP_KAKAO_API_KEY;
+        const kakaoKey = process.env.REACT_APP_KAKAO_API_KEY;
+        console.log('Kakao API Key:', kakaoKey); // 확인용 로그
+    
+        if (window.Kakao && kakaoKey && !window.Kakao.isInitialized()) {
             window.Kakao.init(kakaoKey);
             console.log('Kakao initialized');
+        } else {
+            console.error('Kakao SDK or API Key is missing');
         }
     }, []);
 
