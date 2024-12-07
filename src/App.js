@@ -10,12 +10,15 @@ function App() {
     useEffect(() => {
         const kakaoKey = process.env.REACT_APP_KAKAO_API_KEY;
         console.log('Kakao API Key:', kakaoKey); // 확인용 로그
-    
-        if (window.Kakao && kakaoKey && !window.Kakao.isInitialized()) {
+
+        // Kakao SDK 초기화
+        if (window.Kakao && !window.Kakao.isInitialized()) {
             window.Kakao.init(kakaoKey);
             console.log('Kakao initialized');
+        } else if (window.Kakao && window.Kakao.isInitialized()) {
+            console.log('Kakao SDK is already initialized');
         } else {
-            console.error('Kakao SDK or API Key is missing');
+            console.error('Kakao SDK is not loaded');
         }
     }, []);
 
@@ -29,7 +32,8 @@ function App() {
         setImageUrl(null);
 
         try {
-            const response = await axios.post('http://127.0.0.1:5000/generate', { prompt });
+            const backendUrl = process.env.REACT_APP_BACKEND_URL; // Backend URL from .env
+            const response = await axios.post(`${backendUrl}/generate`, { prompt });
             setImageUrl(response.data.image_url);
         } catch (error) {
             console.error("Error generating image:", error);
@@ -40,7 +44,12 @@ function App() {
     };
 
     const shareToKakao = () => {
+        const frontendUrl = process.env.REACT_APP_FRONTEND_URL; // Frontend URL from .env
         if (window.Kakao) {
+            if (!imageUrl) {
+                alert('생성된 이미지가 없습니다. 먼저 이미지를 생성하세요.');
+                return;
+            }
             window.Kakao.Share.sendDefault({
                 objectType: 'feed',
                 content: {
@@ -48,8 +57,8 @@ function App() {
                     description: '이 AI 만능 그림봇을 확인해 보세요!',
                     imageUrl: imageUrl,
                     link: {
-                        mobileWebUrl: 'http://localhost:3000',
-                        webUrl: 'http://localhost:3000'
+                        mobileWebUrl: frontendUrl,
+                        webUrl: frontendUrl
                     }
                 }
             });
@@ -57,6 +66,7 @@ function App() {
             alert('Kakao SDK is not initialized');
         }
     };
+
     return (
         <div className="app-container">
             <h1 className="title">만능 그림봇</h1>
@@ -78,6 +88,7 @@ function App() {
                     <div className="spinner"></div>
                 </div>
             )}
+
             {imageUrl && (
                 <div className="image-container">
                     <h3>이미지가 생성되었습니다. 카카오톡으로 공유해서 친구들에게 전달하세요.</h3>
@@ -85,7 +96,7 @@ function App() {
                     <div className="button-container">
                         {/* 카카오톡 공유 버튼 이미지 아래로 배치 */}
                         <button onClick={shareToKakao} className="kakao-button">
-                        <div className="kakao-icon"></div>
+                            <div className="kakao-icon"></div>
                             카카오톡 공유하기
                         </button>
                     </div>
