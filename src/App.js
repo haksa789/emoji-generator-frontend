@@ -50,11 +50,15 @@ function App() {
                 alert('생성된 이미지가 없습니다. 먼저 이미지를 생성하세요.');
                 return;
             }
+            if (!prompt.trim()) {
+                alert('프롬프트가 비어 있습니다.');
+                return;
+            }
             window.Kakao.Share.sendDefault({
                 objectType: 'feed',
                 content: {
                     title: '만능 그림봇',
-                    description: '이 AI 만능 그림봇을 확인해 보세요!',
+                    description: `"${prompt}"로 생성된 이미지입니다.`, // 프롬프트를 포함한 설명
                     imageUrl: imageUrl,
                     link: {
                         mobileWebUrl: frontendUrl,
