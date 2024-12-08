@@ -9,8 +9,15 @@ function App() {
 
     useEffect(() => {
         const kakaoKey = process.env.REACT_APP_KAKAO_API_KEY;
+        console.log('Kakao API Key:', kakaoKey); // 확인용 로그
+
         if (window.Kakao && !window.Kakao.isInitialized()) {
             window.Kakao.init(kakaoKey);
+            console.log('Kakao initialized');
+        } else if (window.Kakao && window.Kakao.isInitialized()) {
+            console.log('Kakao SDK is already initialized');
+        } else {
+            console.error('Kakao SDK is not loaded');
         }
     }, []);
 
@@ -24,7 +31,8 @@ function App() {
         setImageUrl(null);
 
         try {
-            const backendUrl = process.env.REACT_APP_BACKEND_URL;
+            
+            const backendUrl = process.env.REACT_APP_BACKEND_URL; // Backend URL from .env
             const response = await axios.post(`${backendUrl}/generate`, { prompt });
 
             if (response.data.image_url) {
@@ -42,7 +50,7 @@ function App() {
     };
 
     const shareToKakao = () => {
-        const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
+        const frontendUrl = process.env.REACT_APP_FRONTEND_URL; // Frontend URL from .env
         if (window.Kakao) {
             if (!imageUrl) {
                 alert('생성된 이미지가 없습니다. 먼저 이미지를 생성하세요.');
@@ -91,9 +99,13 @@ function App() {
                 <div className="image-container">
                     <h3>이미지가 생성되었습니다. 카카오톡으로 공유해서 친구들에게 전달하세요.</h3>
                     <img src={imageUrl} alt="Generated" className="generated-image" />
-                    <button onClick={shareToKakao} className="kakao-button">
-                        카카오톡 공유하기
-                    </button>
+                    <div className="button-container">
+                        {/* 카카오톡 공유 버튼 이미지 아래로 배치 */}
+                        <button onClick={shareToKakao} className="kakao-button">
+                            <div className="kakao-icon"></div>
+                            카카오톡 공유하기
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
