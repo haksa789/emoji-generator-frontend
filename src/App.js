@@ -7,6 +7,7 @@ function App() {
     const [prompt, setPrompt] = useState('');
     const [imageUrl, setImageUrl] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [detailedExplanation, setDetailedExplanation] = useState('');  // 상태 추가
 
     useEffect(() => {
         const kakaoKey = process.env.REACT_APP_KAKAO_API_KEY;
@@ -22,33 +23,34 @@ function App() {
         }
     }, []);
 
-    const handleGenerate = async () => {
-        if (!prompt.trim()) {
-            alert("텍스트를 입력해주세요...");
-            return;
+const handleGenerate = async () => {
+    if (!prompt.trim()) {
+        alert("텍스트를 입력해주세요...");
+        return;
+    }
+
+    setLoading(true);
+    setImageUrl(null);
+    setDetailedExplanation(''); // 상태 초기화
+
+    try {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL; // Backend URL from .env
+        const response = await axios.post(`${backendUrl}/generate`, { prompt });
+
+        if (response.data.image_url) {
+            setImageUrl(response.data.image_url);
+            setDetailedExplanation(response.data.detailed_explanation); // 상세 설명 저장
         }
-
-        setLoading(true);
-        setImageUrl(null);
-
-        try {
-            
-            const backendUrl = process.env.REACT_APP_BACKEND_URL; // Backend URL from .env
-            const response = await axios.post(`${backendUrl}/generate`, { prompt });
-
-            if (response.data.image_url) {
-                setImageUrl(response.data.image_url);
-            }
-        } catch (error) {
-            if (error.response && error.response.data.error) {
-                alert(error.response.data.error);
-            } else {
-                alert("이미지를 생성하지 못했습니다. 다시 시도해 주세요.");
-            }
-        } finally {
-            setLoading(false);
+    } catch (error) {
+        if (error.response && error.response.data.error) {
+            alert(error.response.data.error);
+        } else {
+            alert("이미지를 생성하지 못했습니다. 다시 시도해 주세요.");
         }
-    };
+    } finally {
+        setLoading(false);
+    }
+};
 
     const shareToKakao = () => {
         const frontendUrl = process.env.REACT_APP_FRONTEND_URL; // Frontend URL from .env
@@ -103,8 +105,13 @@ function App() {
                 <div className="image-container">
                     <h3>이미지가 생성되었습니다. 카카오톡으로 공유해서 친구들에게 전달하세요.</h3>
                     <img src={imageUrl} alt="Generated" className="generated-image" />
+                    
+                    {/* 상세 설명 표시 */}
+                    <div className="translated-prompt">
+                        <p>{detailedExplanation}</p>
+                    </div>
+                    
                     <div className="button-container">
-                        {/* 카카오톡 공유 버튼 이미지 아래로 배치 */}
                         <button onClick={shareToKakao} className="kakao-button">
                             <div className="kakao-icon"></div>
                             카카오톡 공유하기

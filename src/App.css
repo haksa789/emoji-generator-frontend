@@ -98,6 +98,15 @@
     color: white;
 }
 
+.translated-prompt {
+    font-size: 16px; /* 텍스트 크기 */
+    line-height: 1.5; /* 줄 간격 */
+    max-width: 600px; /* 텍스트 최대 너비 설정 */
+    word-wrap: break-word; /* 긴 단어를 강제로 줄바꿈 */
+    white-space: normal; /* 공백과 줄바꿈을 브라우저가 자동 처리하도록 설정 */
+    margin: 0 auto; /* 가운데 정렬 */
+    text-align: justify; /* 텍스트 정렬 */
+}
 
 /* 입력창 스타일 */
 .input-container {
