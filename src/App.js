@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
+import emojigenLogo from './emoji-gen.png';
 
 function App() {
     const [prompt, setPrompt] = useState('');
@@ -75,11 +76,14 @@ function App() {
 
     return (
         <div className="app-container">
-            <h1 className="title">만능 그림봇</h1>
+            <header className="app-header">
+                <img src={emojigenLogo} alt="emojigenLogo" className="emoji-genLogo" />
+                <h1 className="title">만능 그림봇</h1>
+            </header>
             <div className="input-container">
                 <input
                     type="text"
-                    placeholder="아무 말이나 넣어보세요."
+                    placeholder="아무거나 그려달라고 해보세요."
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     className="input-box"
