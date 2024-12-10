@@ -11,7 +11,6 @@ function App() {
 
     useEffect(() => {
         const kakaoKey = process.env.REACT_APP_KAKAO_API_KEY;
-        console.log('Kakao API Key:', kakaoKey); // 확인용 로그
 
         if (window.Kakao && !window.Kakao.isInitialized()) {
             window.Kakao.init(kakaoKey);
